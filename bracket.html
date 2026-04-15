@@ -329,10 +329,7 @@
     .wrf .round-body { gap: 0; margin-top: 345px; }
     .wrf { margin-left: 0px; }
 
-    @media (max-width: 768px) {
-      .board {
-        transform: scale(0.9);
-      }
+   
 
       .division-tabs {
         justify-content: flex-start;
@@ -347,14 +344,7 @@
       }
     }
 
-    @media (max-width: 480px) {
-      .board {
-        transform: scale(0.8);
-      }
-
-      .match {
-        width: 160px;
-      }
+    
 
       .match-title {
         grid-template-columns: 1fr 1fr;
@@ -382,6 +372,49 @@
         font-size: 9px;
         padding: 4px 6px;
       }
+
+@media (max-width: 768px) {
+  .division-tabs {
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding: 0 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .match-title {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 4px;
+    font-size: 9px;
+    padding: 4px 6px;
+  }
+
+  .division {
+    grid-column: 1 / -1;
+  }
+
+  .team {
+    font-size: 10px;
+    padding: 4px 6px;
+  }
+
+  .score-box {
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
+  }
+
+  .match-footer {
+    font-size: 9px;
+    padding: 4px 6px;
+  }
+}
     }
   </style>
 </head>
