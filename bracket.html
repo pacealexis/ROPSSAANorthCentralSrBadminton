@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ROPSSAA North Central Sr Badminton Qualifying Tournament</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0 0 20px 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f4f4;
+      color: #111;
+    }
+
+    .title-banner {
+      background: #1f3c88;
+      color: white;
+      text-align: center;
+      padding: 18px 12px 14px;
+      border-radius: 0 0 12px 12px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    }
+
+    .title-banner h1 {
+      margin: 0;
+      font-size: clamp(22px, 5vw, 28px);
+      font-weight: 700;
+      line-height: 1.15;
+      color: white;
+    }
+
+    .page-meta {
+      margin-top: 10px;
+      color: #e5edff;
+      font-size: clamp(12px, 3vw, 14px);
+      line-height: 1.5;
+      font-weight: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #lastUpdated,
+    #refreshCountdown {
+      margin: 2px 0;
+      color: #e5edff;
+    }
+
+    .top-nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 12px 14px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      background: #e5e7eb;
+      color: #111827;
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .nav-link.active {
+      background: #1f3c88;
+      color: white;
+    }
+
+    .division-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 12px 12px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      background: #e5e7eb;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 14px;
+    }
+
+    .tab:hover {
+      background: #cbd5f5;
+    }
+
+    .tab.active {
+      background: #1f3c88;
+      color: white;
+    }
+
+    .scroll-hint {
+      text-align: center;
+      font-size: 12px;
+      color: #64748b;
+      margin: 0 0 8px;
+    }
+
+    .bracket {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0 10px 10px;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+    }
+
+    .board-wrap {
+      position: relative;
+      min-width: 2500px;
+      padding-bottom: 8px;
+    }
+
+    .board {
+      position: relative;
+      z-index: 2;
+      min-width: 2500px;
+      display: grid;
+      grid-template-columns: 190px 190px 190px 190px 190px 190px 40px 210px 210px 210px 210px;
+      column-gap: 28px;
+      align-items: start;
+      transform-origin: top left;
+    }
+
+    .line-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .side {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .round {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .round h3 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .round-body {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .pair,
+    .solo {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .match {
+      width: 180px;
+      border: 1.5px solid #d1d5db;
+      background: white;
+      position: relative;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      overflow: hidden;
+      transition: all 0.15s ease;
+    }
+
+    .match:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+    }
+
+    .match.live {
+      box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
+      border-color: #ef4444;
+    }
+
+    .match-title {
+      background: #1f3c88;
+      color: white;
+      font-weight: 600;
+      padding: 4px 6px;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 6px;
+      align-items: center;
+      font-size: 10px;
+      letter-spacing: 0.2px;
+    }
+
+    .match-number {
+      font-weight: 700;
+      min-width: 0;
+    }
+
+    .court,
+    .division {
+      white-space: nowrap;
+    }
+
+    .team {
+      padding: 4px 6px;
+      border-bottom: 1px solid #ccc;
+      min-height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 11px;
+      line-height: 1.15;
+    }
+
+    .team:last-child {
+      border-bottom: none;
+    }
+
+    .team.winner {
+      background: #d1fae5;
+      font-weight: 700;
+    }
+
+    .team-name {
+      flex: 1;
+      min-width: 0;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+    }
+
+    .score-group {
+      display: flex;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .score-box {
+      width: 14px;
+      height: 14px;
+      border: 1px solid #bfc7d1;
+      border-radius: 3px;
+      background: #f8fafc;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      color: #333;
+      line-height: 1;
+    }
+
+    .match-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 6px;
+      border-top: 1px solid #e5e7eb;
+      background: #f8fafc;
+      font-size: 10px;
+      color: #475569;
+    }
+
+    .status {
+      font-weight: 500;
+    }
+
+    .match-letter {
+      font-weight: 800;
+      font-size: 12px;
+      color: #1f3c88;
+      min-width: 18px;
+      text-align: right;
+    }
+
+    /* Loser side spacing */
+    .lr9 .round-body { gap: 0; margin-top: 355px; }
+    .lr9 { margin-left: 160px; }
+
+    .lr5 .round-body { gap: 0; margin-top: 355px; }
+    .lr5 { margin-left: 160px; }
+
+    .lr7 .round-body { gap: 0; margin-top: 152px; }
+    .lr7 .pair { gap: 314px; }
+    .lr7 { margin-left: 140px; }
+
+    .lr4 .round-body { gap: 0; margin-top: 152px; }
+    .lr4 .pair { gap: 314px; }
+    .lr4 { margin-left: 140px; }
+
+    .lr2 .round-body { gap: 111px; margin-top: 51px; }
+    .lr2 { margin-left: 140px; }
+
+    .lr1 .round-body { gap: 112px; margin-top: 51px; }
+    .lr1 .pair { gap: 111px; }
+    .lr1 { margin-left: 150px; }
+
+    /* Winner side spacing */
+    .wr1 .round-body { gap: 10px; margin-top: 0; }
+    .wr1 .pair { gap: 10px; }
+
+    .wr2 .round-body { gap: 112px; margin-top: 50px; }
+    .wr2 .pair { gap: 112px; }
+    .wr2 { margin-left: 40px; }
+
+    .wr5 .round-body { margin-top: 151px; }
+    .wr5 .pair { gap: 316px; }
+    .wr5 { margin-left: 40px; }
+
+    .wrf .round-body { gap: 0; margin-top: 354px; }
+    .wrf { margin-left: 40px; }
+
+    @media (max-width: 768px) {
+      .board {
+        transform: scale(0.9);
+      }
+
+      .division-tabs {
+        justify-content: flex-start;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding: 0 10px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .tab {
+        flex: 0 0 auto;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .board {
+        transform: scale(0.8);
+      }
+
+      .match {
+        width: 160px;
+      }
+
+      .match-title {
+        grid-template-columns: 1fr 1fr;
+        row-gap: 4px;
+        font-size: 9px;
+        padding: 4px 6px;
+      }
+
+      .division {
+        grid-column: 1 / -1;
+      }
+
+      .team {
+        font-size: 10px;
+        padding: 4px 6px;
+      }
+
+      .score-box {
+        width: 14px;
+        height: 14px;
+        font-size: 9px;
+      }
+
+      .match-footer {
+        font-size: 9px;
+        padding: 4px 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="title-banner">
+    <h1>ROPSSAA North Central Qualifying Tournament</h1>
+    <div class="page-meta">
+      <div id="lastUpdated">Last updated: --</div>
+      <div id="refreshCountdown">Refreshing in: 30s</div>
+    </div>
+  </div>
+
+  <div class="top-nav">
+    <a class="nav-link" href="index.html">Match Dashboard</a>
+    <a class="nav-link active" href="bracket.html">Division Brackets</a>
+  </div>
+
+  <div class="division-tabs">
+    <button class="tab active" data-division="Boys Singles">Boys Singles</button>
+    <button class="tab" data-division="Girls Singles">Girls Singles</button>
+    <button class="tab" data-division="Boys Doubles">Boys Doubles</button>
+    <button class="tab" data-division="Girls Doubles">Girls Doubles</button>
+    <button class="tab" data-division="Mixed Doubles">Mixed Doubles</button>
+  </div>
+
+  <div class="scroll-hint">← Swipe to view bracket →</div>
+
+  <div class="bracket">
+    <div class="board-wrap" id="boardWrap">
+      <svg class="line-layer" id="lineLayer"></svg>
+
+      <div class="board" id="board">
+        <div class="side loser-side">
+          <div class="round lr9">
+            <h3>Second</h3>
+            <div class="round-body">
+              <div class="solo">
+                <div class="match" id="r9m1">
+                  <div class="match-title"><span class="match-number">Match 28</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="side loser-side">
+          <div class="round lr5">
+            <h3>R8</h3>
+            <div class="round-body">
+              <div class="solo">
+                <div class="match" id="r8m1">
+                  <div class="match-title"><span class="match-number">Match 27</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="side loser-side">
+          <div class="round lr7">
+            <h3>R7</h3>
+            <div class="round-body">
+              <div class="pair">
+                <div class="match" id="r7m1">
+                  <div class="match-title"><span class="match-number">Match 25</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+
+                <div class="match" id="r7m2">
+                  <div class="match-title"><span class="match-number">Match 26</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="side loser-side">
+          <div class="round lr4">
+            <h3>R6</h3>
+            <div class="round-body">
+              <div class="pair">
+                <div class="match" id="r6m1">
+                  <div class="match-title"><span class="match-number">Match 23</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+
+                <div class="match" id="r6m2">
+                  <div class="match-title"><span class="match-number">Match 24</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="side loser-side">
+          <div class="round lr2">
+            <h3>R4</h3>
+            <div class="round-body">
+              <div class="match" id="r4m1">
+                <div class="match-title"><span class="match-number">Match 19</span><span class="court">Court -</span><span class="division">Division</span></div>
+                <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+              </div>
+
+              <div class="match" id="r4m2">
+                <div class="match-title"><span class="match-number">Match 20</span><span class="court">Court -</span><span class="division">Division</span></div>
+                <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+              </div>
+
+              <div class="match" id="r4m3">
+                <div class="match-title"><span class="match-number">Match 21</span><span class="court">Court -</span><span class="division">Division</span></div>
+                <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+              </div>
+
+              <div class="match" id="r4m4">
+                <div class="match-title"><span class="match-number">Match 22</span><span class="court">Court -</span><span class="division">Division</span></div>
+                <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="side loser-side">
+          <div class="round lr1">
+            <h3>R3</h3>
+            <div class="round-body">
+              <div class="pair">
+                <div class="match" id="r3m1">
+                  <div class="match-title"><span class="match-number">Match 15</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+
+                <div class="match" id="r3m2">
+                  <div class="match-title"><span class="match-number">Match 16</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+              </div>
+
+              <div class="pair">
+                <div class="match" id="r3m3">
+                  <div class="match-title"><span class="match-number">Match 17</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+
+                <div class="match" id="r3m4">
+                  <div class="match-title"><span class="match-number">Match 18</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div></div>
+
+        <div class="side">
+          <div class="round wr1">
+            <h3>R1</h3>
+            <div class="round-body">
+              <div class="pair">
+                <div class="match" id="r1m1">
+                  <div class="match-title"><span class="match-number">Match 1</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+
+                <div class="match" id="r1m2">
+                  <div class="match-title"><span class="match-number">Match 2</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+              </div>
+
+              <div class="pair">
+                <div class="match" id="r1m3">
+                  <div class="match-title"><span class="match-number">Match 3</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+
+                <div class="match" id="r1m4">
+                  <div class="match-title"><span class="match-number">Match 4</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+              </div>
+
+              <div class="pair">
+                <div class="match" id="r1m5">
+                  <div class="match-title"><span class="match-number">Match 5</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+
+                <div class="match" id="r1m6">
+                  <div class="match-title"><span class="match-number">Match 6</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+              </div>
+
+              <div class="pair">
+                <div class="match" id="r1m7">
+                  <div class="match-title"><span class="match-number">Match 7</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+
+                <div class="match" id="r1m8">
+                  <div class="match-title"><span class="match-number">Match 8</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter"></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="side">
+          <div class="round wr2">
+            <h3>R2</h3>
+            <div class="round-body">
+              <div class="pair">
+                <div class="match" id="A">
+                  <div class="match-title"><span class="match-number">Match 9</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter">A</span></div>
+                </div>
+
+                <div class="match" id="B">
+                  <div class="match-title"><span class="match-number">Match 10</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter">B</span></div>
+                </div>
+              </div>
+
+              <div class="pair">
+                <div class="match" id="C">
+                  <div class="match-title"><span class="match-number">Match 11</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter">C</span></div>
+                </div>
+
+                <div class="match" id="D">
+                  <div class="match-title"><span class="match-number">Match 12</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter">D</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="side">
+          <div class="round wr5">
+            <h3>R5</h3>
+            <div class="round-body">
+              <div class="pair">
+                <div class="match" id="E">
+                  <div class="match-title"><span class="match-number">Match 13</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter">E</span></div>
+                </div>
+
+                <div class="match" id="F">
+                  <div class="match-title"><span class="match-number">Match 14</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter">F</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="side">
+          <div class="round wrf">
+            <h3>Final</h3>
+            <div class="round-body">
+              <div class="solo">
+                <div class="match" id="I">
+                  <div class="match-title"><span class="match-number">Match 29</span><span class="court">Court -</span><span class="division">Division</span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="team"><span class="team-name">TBD</span><span class="score-group"><span class="score-box"></span><span class="score-box"></span><span class="score-box"></span></span></div>
+                  <div class="match-footer"><span class="status">Upcoming</span><span class="match-letter">I</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- board -->
+    </div><!-- board-wrap -->
+  </div><!-- bracket -->
+
+  <script>
+    function drawLine(svg, x1, y1, x2, y2) {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", x1);
+      line.setAttribute("y1", y1);
+      line.setAttribute("x2", x2);
+      line.setAttribute("y2", y2);
+      line.setAttribute("stroke", "#222");
+      line.setAttribute("stroke-width", "2");
+      svg.appendChild(line);
+    }
+
+    function getRectInWrap(el, wrapRect) {
+      const r = el.getBoundingClientRect();
+      return {
+        left: r.left - wrapRect.left,
+        right: r.right - wrapRect.left,
+        top: r.top - wrapRect.top,
+        bottom: r.bottom - wrapRect.top,
+        cy: r.top - wrapRect.top + r.height / 2
+      };
+    }
+
+    function connectPair(topId, bottomId, targetId, svg, wrapRect) {
+      const topEl = document.getElementById(topId);
+      const bottomEl = document.getElementById(bottomId);
+      const targetEl = document.getElementById(targetId);
+      if (!topEl || !bottomEl || !targetEl) return;
+
+      const top = getRectInWrap(topEl, wrapRect);
+      const bottom = getRectInWrap(bottomEl, wrapRect);
+      const target = getRectInWrap(targetEl, wrapRect);
+
+      const stub = 16;
+      const joinX = top.right + 16;
+      const midY = (top.cy + bottom.cy) / 2;
+
+      drawLine(svg, top.right, top.cy, top.right + stub, top.cy);
+      drawLine(svg, bottom.right, bottom.cy, bottom.right + stub, bottom.cy);
+      drawLine(svg, joinX, top.cy, joinX, bottom.cy);
+      drawLine(svg, joinX, midY, target.left, target.cy);
+    }
+
+    function connectPairToTargetLeft(topSourceId, bottomSourceId, targetId, svg, wrapRect) {
+      const topEl = document.getElementById(topSourceId);
+      const bottomEl = document.getElementById(bottomSourceId);
+      const targetEl = document.getElementById(targetId);
+      if (!topEl || !bottomEl || !targetEl) return;
+
+      const top = getRectInWrap(topEl, wrapRect);
+      const bottom = getRectInWrap(bottomEl, wrapRect);
+      const target = getRectInWrap(targetEl, wrapRect);
+
+      const stub = 16;
+      const joinX = top.left - 16;
+      const midY = (top.cy + bottom.cy) / 2;
+
+      drawLine(svg, top.left, top.cy, top.left - stub, top.cy);
+      drawLine(svg, bottom.left, bottom.cy, bottom.left - stub, bottom.cy);
+      drawLine(svg, joinX, top.cy, joinX, bottom.cy);
+      drawLine(svg, joinX, midY, target.right, target.cy);
+    }
+
+    function connectSingleLeftToLeft(sourceId, targetId, svg, wrapRect) {
+      const sourceEl = document.getElementById(sourceId);
+      const targetEl = document.getElementById(targetId);
+      if (!sourceEl || !targetEl) return;
+
+      const source = getRectInWrap(sourceEl, wrapRect);
+      const target = getRectInWrap(targetEl, wrapRect);
+
+      drawLine(svg, target.right, target.cy, source.left, source.cy);
+    }
+
+    function drawBracketLines() {
+      const wrap = document.getElementById("boardWrap");
+      const svg = document.getElementById("lineLayer");
+      const wrapRect = wrap.getBoundingClientRect();
+
+      svg.innerHTML = "";
+      svg.setAttribute("width", wrap.scrollWidth);
+      svg.setAttribute("height", wrap.scrollHeight);
+
+      connectPair("r1m1", "r1m2", "A", svg, wrapRect);
+      connectPair("r1m3", "r1m4", "B", svg, wrapRect);
+      connectPair("r1m5", "r1m6", "C", svg, wrapRect);
+      connectPair("r1m7", "r1m8", "D", svg, wrapRect);
+
+      connectPair("A", "B", "E", svg, wrapRect);
+      connectPair("C", "D", "F", svg, wrapRect);
+      connectPair("E", "F", "I", svg, wrapRect);
+
+      connectPairToTargetLeft("r1m1", "r1m2", "r3m1", svg, wrapRect);
+      connectPairToTargetLeft("r1m3", "r1m4", "r3m2", svg, wrapRect);
+      connectPairToTargetLeft("r1m5", "r1m6", "r3m3", svg, wrapRect);
+      connectPairToTargetLeft("r1m7", "r1m8", "r3m4", svg, wrapRect);
+
+      connectSingleLeftToLeft("r3m1", "r4m1", svg, wrapRect);
+      connectSingleLeftToLeft("r3m2", "r4m2", svg, wrapRect);
+      connectSingleLeftToLeft("r3m3", "r4m3", svg, wrapRect);
+      connectSingleLeftToLeft("r3m4", "r4m4", svg, wrapRect);
+
+      connectPairToTargetLeft("r4m1", "r4m2", "r6m1", svg, wrapRect);
+      connectPairToTargetLeft("r4m3", "r4m4", "r6m2", svg, wrapRect);
+
+      connectSingleLeftToLeft("r6m1", "r7m1", svg, wrapRect);
+      connectSingleLeftToLeft("r6m2", "r7m2", svg, wrapRect);
+
+      connectPairToTargetLeft("r7m1", "r7m2", "r8m1", svg, wrapRect);
+      connectSingleLeftToLeft("r8m1", "r9m1", svg, wrapRect);
+    }
+
+    const WINNERS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTucx54Wki2ucYqbUWkGFevrHxIXJQ0fhc2zh5iNW5fdZlJNr9TVCIYKjGdXb81SHcjp9HK1i5XuTgd/pub?gid=457959203&single=true&output=csv";
+    const LOSERS_URL  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTucx54Wki2ucYqbUWkGFevrHxIXJQ0fhc2zh5iNW5fdZlJNr9TVCIYKjGdXb81SHcjp9HK1i5XuTgd/pub?gid=2018956524&single=true&output=csv";
+
+    let refreshSeconds = 30;
+    let refreshCountdownStarted = false;
+    let currentDivision = "Boys Singles";
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            cell += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === "," && !inQuotes) {
+          row.push(cell);
+          cell = "";
+        } else if ((char === "\n" || char === "\r") && !inQuotes) {
+          if (char === "\r" && next === "\n") i++;
+          row.push(cell);
+          if (row.some(v => v !== "")) rows.push(row);
+          row = [];
+          cell = "";
+        } else {
+          cell += char;
+        }
+      }
+
+      row.push(cell);
+      if (row.some(v => v !== "")) rows.push(row);
+
+      const headers = rows.shift().map(h => h.trim());
+      return rows.map(r => {
+        const obj = {};
+        headers.forEach((h, idx) => {
+          obj[h] = (r[idx] || "").trim();
+        });
+        return obj;
+      });
+    }
+
+    function getMatchId(row) {
+      return (
+        row["Match ID"] ||
+        row["Match ID "] ||
+        row["Match ID\r"] ||
+        row["﻿Match ID"] ||
+        ""
+      ).trim();
+    }
+
+    const winnerMap = {
+      W1:"r1m1", W2:"r1m2", W3:"r1m3", W4:"r1m4",
+      W5:"r1m5", W6:"r1m6", W7:"r1m7", W8:"r1m8",
+      W9:"A", W10:"B", W11:"C", W12:"D",
+      W21:"E", W22:"F", W28:"I"
+    };
+
+    const loserMap = {
+      L1:"r3m1", L2:"r3m2", L3:"r3m3", L4:"r3m4",
+      L5:"r4m1", L6:"r4m2", L7:"r4m3", L8:"r4m4",
+      L9:"r6m1", L10:"r6m2",
+      L11:"r7m1", L12:"r7m2",
+      L13:"r8m1", L14:"r9m1"
+    };
+
+    function getLetter(rawId) {
+      if (rawId === "W9") return "A";
+      if (rawId === "W10") return "B";
+      if (rawId === "W11") return "C";
+      if (rawId === "W12") return "D";
+      if (rawId === "W21") return "E";
+      if (rawId === "W22") return "F";
+      if (rawId === "L11") return "G";
+      if (rawId === "L12") return "H";
+      if (rawId === "W28") return "I";
+      return "";
+    }
+
+    function clearMatches() {
+      document.querySelectorAll(".match").forEach(el => {
+        const matchNumber = el.querySelector(".match-number");
+        const court = el.querySelector(".court");
+        const division = el.querySelector(".division");
+        const status = el.querySelector(".status");
+        const letter = el.querySelector(".match-letter");
+
+        if (matchNumber) {
+          const fallback = matchNumber.getAttribute("data-default") || matchNumber.textContent;
+          matchNumber.textContent = fallback;
+          matchNumber.setAttribute("data-default", fallback);
+        }
+
+        if (court) court.textContent = "Court -";
+        if (division) division.textContent = "Division";
+        if (status) status.textContent = "Upcoming";
+        if (letter) letter.textContent = "";
+
+        el.classList.remove("live");
+
+        el.querySelectorAll(".team").forEach(team => team.classList.remove("winner"));
+        el.querySelectorAll(".team-name").forEach(name => name.textContent = "TBD");
+        el.querySelectorAll(".score-box").forEach(box => box.textContent = "");
+      });
+
+      document.getElementById("A").querySelector(".match-letter").textContent = "A";
+      document.getElementById("B").querySelector(".match-letter").textContent = "B";
+      document.getElementById("C").querySelector(".match-letter").textContent = "C";
+      document.getElementById("D").querySelector(".match-letter").textContent = "D";
+      document.getElementById("E").querySelector(".match-letter").textContent = "E";
+      document.getElementById("F").querySelector(".match-letter").textContent = "F";
+      document.getElementById("I").querySelector(".match-letter").textContent = "I";
+    }
+
+    function updateMatch(matchId, data) {
+      const el = document.getElementById(matchId);
+      if (!el) return;
+
+      const teams = el.querySelectorAll(".team");
+      const matchNumberEl = el.querySelector(".match-number");
+      const courtEl = el.querySelector(".court");
+      const divisionEl = el.querySelector(".division");
+      const statusEl = el.querySelector(".status");
+      const letterEl = el.querySelector(".match-letter");
+
+      const rawId = getMatchId(data);
+      const displayMatch = data["Display Match"] || rawId || "";
+      const division = data["Division"] || "";
+      const court = (data["Court"] || "-").trim();
+      const status = (data["Status"] || "Upcoming").trim();
+
+      if (matchNumberEl) matchNumberEl.textContent = displayMatch;
+      if (courtEl) courtEl.textContent = `Court ${court}`;
+      if (divisionEl) divisionEl.textContent = division;
+
+      const teamA = data["Team A"] || "TBD";
+      const teamB = data["Team B"] || "TBD";
+
+      if (teams.length >= 2) {
+        const teamAName = teams[0].querySelector(".team-name");
+        const teamBName = teams[1].querySelector(".team-name");
+
+        if (teamAName) teamAName.textContent = teamA;
+        if (teamBName) teamBName.textContent = teamB;
+
+        const scoresA = [data["G1 A"], data["G2 A"], data["G3 A"]];
+        const scoresB = [data["G1 B"], data["G2 B"], data["G3 B"]];
+
+        const boxesA = teams[0].querySelectorAll(".score-box");
+        const boxesB = teams[1].querySelectorAll(".score-box");
+
+        boxesA.forEach((box, i) => box.textContent = scoresA[i] || "");
+        boxesB.forEach((box, i) => box.textContent = scoresB[i] || "");
+
+        teams[0].classList.remove("winner");
+        teams[1].classList.remove("winner");
+
+        const winner = (data["Winner"] || "").trim();
+        if (winner && winner === teamA) teams[0].classList.add("winner");
+        if (winner && winner === teamB) teams[1].classList.add("winner");
+      }
+
+      if (statusEl) statusEl.textContent = status;
+      if (letterEl) letterEl.textContent = getLetter(rawId);
+
+      el.classList.remove("live");
+      if (/live|playing/i.test(status)) {
+        el.classList.add("live");
+      }
+    }
+
+    async function loadCSV(url) {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`Fetch failed: ${res.status} for ${url}`);
+      return parseCSV(await res.text());
+    }
+
+    function updateLastUpdatedTime() {
+      const el = document.getElementById("lastUpdated");
+      if (!el) return;
+      const now = new Date();
+      const formatted = now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+      el.textContent = `Last updated: ${formatted}`;
+    }
+
+    function startRefreshCountdown() {
+      if (refreshCountdownStarted) return;
+      refreshCountdownStarted = true;
+
+      const el = document.getElementById("refreshCountdown");
+      if (!el) return;
+
+      el.textContent = `Refreshing in: ${refreshSeconds}s`;
+
+      setInterval(() => {
+        refreshSeconds--;
+        if (refreshSeconds <= 0) refreshSeconds = 30;
+        el.textContent = `Refreshing in: ${refreshSeconds}s`;
+      }, 1000);
+    }
+
+    function setDivision(division) {
+      currentDivision = division;
+
+      document.querySelectorAll(".tab").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.division === division);
+      });
+
+      loadData();
+    }
+
+    async function loadData() {
+      try {
+        clearMatches();
+
+        const [winners, losers] = await Promise.all([
+          loadCSV(WINNERS_URL),
+          loadCSV(LOSERS_URL)
+        ]);
+
+        winners.forEach(row => {
+          if ((row["Division"] || "").trim() !== currentDivision) return;
+          const rawId = getMatchId(row);
+          const htmlId = winnerMap[rawId];
+          if (htmlId) updateMatch(htmlId, row);
+        });
+
+        losers.forEach(row => {
+          if ((row["Division"] || "").trim() !== currentDivision) return;
+          const rawId = getMatchId(row);
+          const htmlId = loserMap[rawId];
+          if (htmlId) updateMatch(htmlId, row);
+        });
+
+        drawBracketLines();
+        setTimeout(drawBracketLines, 100);
+        updateLastUpdatedTime();
+        refreshSeconds = 30;
+      } catch (err) {
+        console.error("Bracket load failed:", err);
+      }
+    }
+
+    window.addEventListener("load", () => {
+      document.querySelectorAll(".tab").forEach(btn => {
+        btn.addEventListener("click", () => setDivision(btn.dataset.division));
+      });
+
+      drawBracketLines();
+      setTimeout(drawBracketLines, 100);
+      loadData();
+      startRefreshCountdown();
+      setInterval(loadData, 30000);
+    });
+
+    window.addEventListener("resize", drawBracketLines);
+  </script>
+</body>
+</html>

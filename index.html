@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ROPSSAA North Central Qualifying Tournament</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6fb;
+      color: #111827;
+    }
+
+    .title-banner {
+      background: #1f3c88;
+      color: white;
+      text-align: center;
+      padding: 18px 12px 14px;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      margin-bottom: 18px;
+    }
+
+    .title-banner h1 {
+      margin: 0;
+      font-size: clamp(22px, 5vw, 28px);
+      font-weight: 700;
+      line-height: 1.15;
+    }
+
+    .page-meta {
+      margin-top: 10px;
+      color: #e5edff;
+      font-size: clamp(12px, 3vw, 14px);
+      line-height: 1.5;
+      font-weight: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #lastUpdated,
+    #refreshCountdown {
+      margin: 2px 0;
+      color: #e5edff;
+    }
+
+    .page-wrap {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 0 12px 24px;
+    }
+
+    .top-nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 0 18px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      background: #e5e7eb;
+      color: #111827;
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .nav-link.active {
+      background: #1f3c88;
+      color: white;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .summary-card {
+      background: white;
+      border: 1px solid #dbe1ea;
+      border-radius: 14px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+      padding: 16px 14px;
+      text-align: center;
+    }
+
+    .summary-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+
+    .summary-value {
+      font-size: 30px;
+      font-weight: 800;
+      color: #1f3c88;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: #e5e7eb;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .filter-btn.active {
+      background: #1f3c88;
+      color: white;
+    }
+
+    .section {
+      margin-bottom: 28px;
+    }
+
+    .section h2 {
+      margin: 0 0 12px 0;
+      font-size: 22px;
+      color: #1f2937;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .empty-state {
+      background: white;
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 18px;
+      color: #64748b;
+      text-align: center;
+    }
+
+    .match {
+      border: 1.5px solid #d1d5db;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      overflow: hidden;
+      transition: all 0.15s ease;
+    }
+
+    .match:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+    }
+
+    .match.live {
+      box-shadow: 0 0 14px rgba(255,0,0,0.45);
+      border-color: #ef4444;
+    }
+
+    .match-title {
+      background: #1f3c88;
+      color: white;
+      padding: 6px 8px;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .match-number {
+      font-weight: 800;
+      min-width: 0;
+    }
+
+    .court,
+    .division {
+      white-space: nowrap;
+    }
+
+    .team {
+      padding: 6px 8px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      min-height: 24px;
+      font-size: 12px;
+    }
+
+    .team:last-of-type {
+      border-bottom: none;
+    }
+
+    .team.winner {
+      background: #d1fae5;
+      font-weight: 700;
+    }
+
+    .team-name {
+      flex: 1;
+      min-width: 0;
+      white-space: normal;
+      overflow: visible;
+      line-height: 1.2;
+    }
+
+    .score-group {
+      display: flex;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    .score-box {
+      width: 16px;
+      height: 16px;
+      border: 1px solid #bfc7d1;
+      border-radius: 3px;
+      background: #f8fafc;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      color: #333;
+      line-height: 1;
+    }
+
+    .match-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 8px;
+      border-top: 1px solid #e5e7eb;
+      background: #f8fafc;
+      font-size: 11px;
+      color: #475569;
+    }
+
+    .status {
+      font-weight: 600;
+    }
+
+    .match-letter {
+      font-weight: 800;
+      font-size: 12px;
+      color: #1f3c88;
+      min-width: 18px;
+      text-align: right;
+    }
+
+    @media (max-width: 900px) {
+      .summary-grid {
+        grid-template-columns: repeat(2, minmax(140px, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      .summary-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .summary-card {
+        padding: 12px 10px;
+        border-radius: 12px;
+      }
+
+      .summary-label {
+        font-size: 12px;
+        margin-bottom: 6px;
+      }
+
+      .summary-value {
+        font-size: 24px;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .match-title {
+        grid-template-columns: 1fr 1fr;
+        row-gap: 4px;
+        font-size: 10px;
+      }
+
+      .division {
+        grid-column: 1 / -1;
+      }
+
+      .team {
+        padding: 6px 8px;
+        font-size: 12px;
+      }
+
+      .team-name {
+        font-size: 12px;
+      }
+
+      .score-box {
+        width: 18px;
+        height: 18px;
+        font-size: 10px;
+      }
+
+      .match-footer {
+        padding: 6px 8px;
+        font-size: 11px;
+      }
+
+      .match-letter {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="title-banner">
+    <h1>ROPSSAA North Central Qualifying Tournament</h1>
+    <div class="page-meta">
+      <div id="lastUpdated">Last updated: --</div>
+      <div id="refreshCountdown">Refreshing in: 30s</div>
+    </div>
+  </div>
+
+  <div class="page-wrap">
+    <div class="top-nav">
+      <a class="nav-link active" href="index.html">Match Dashboard</a>
+      <a class="nav-link" href="bracket.html">Division Brackets</a>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-label">Total Games</div>
+        <div class="summary-value" id="totalGames">0</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Now Playing</div>
+        <div class="summary-value" id="nowPlayingCount">0</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">On Deck</div>
+        <div class="summary-value" id="onDeckCount">0</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Done</div>
+        <div class="summary-value" id="doneCount">0</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="live">Now Playing</button>
+      <button class="filter-btn" data-filter="ondeck">On Deck</button>
+      <button class="filter-btn" data-filter="upcoming">Upcoming</button>
+      <button class="filter-btn" data-filter="done">Done</button>
+    </div>
+
+    <div class="section">
+      <h2>Matches</h2>
+      <div id="matchGrid" class="cards-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    const WINNERS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTucx54Wki2ucYqbUWkGFevrHxIXJQ0fhc2zh5iNW5fdZlJNr9TVCIYKjGdXb81SHcjp9HK1i5XuTgd/pub?gid=457959203&single=true&output=csv";
+    const LOSERS_URL  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTucx54Wki2ucYqbUWkGFevrHxIXJQ0fhc2zh5iNW5fdZlJNr9TVCIYKjGdXb81SHcjp9HK1i5XuTgd/pub?gid=2018956524&single=true&output=csv";
+
+    let refreshSeconds = 30;
+    let refreshCountdownStarted = false;
+    let currentFilter = "all";
+    let allMatches = [];
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            cell += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === "," && !inQuotes) {
+          row.push(cell);
+          cell = "";
+        } else if ((char === "\n" || char === "\r") && !inQuotes) {
+          if (char === "\r" && next === "\n") i++;
+          row.push(cell);
+          if (row.some(v => v !== "")) rows.push(row);
+          row = [];
+          cell = "";
+        } else {
+          cell += char;
+        }
+      }
+
+      row.push(cell);
+      if (row.some(v => v !== "")) rows.push(row);
+
+      const headers = rows.shift().map(h => h.trim());
+      return rows.map(r => {
+        const obj = {};
+        headers.forEach((h, idx) => {
+          obj[h] = (r[idx] || "").trim();
+        });
+        return obj;
+      });
+    }
+
+    function getMatchId(row) {
+      return (
+        row["Match ID"] ||
+        row["Match ID "] ||
+        row["Match ID\r"] ||
+        row["﻿Match ID"] ||
+        ""
+      ).trim();
+    }
+
+    function getLetter(rawId) {
+      if (rawId === "W9") return "A";
+      if (rawId === "W10") return "B";
+      if (rawId === "W11") return "C";
+      if (rawId === "W12") return "D";
+      if (rawId === "W21") return "E";
+      if (rawId === "W22") return "F";
+      if (rawId === "L11") return "G";
+      if (rawId === "L12") return "H";
+      if (rawId === "W28") return "I";
+      return "";
+    }
+
+    function normalizeStatus(status) {
+      const s = (status || "").trim().toLowerCase();
+
+      if (s.includes("live") || s.includes("playing")) return "live";
+      if (s.includes("on deck")) return "ondeck";
+      if (s.includes("done") || s.includes("completed") || s.includes("complete")) return "done";
+      return "upcoming";
+    }
+
+    function getMatchSortNumber(match) {
+      const display = (match["Display Match"] || "").toLowerCase();
+      const id = getMatchId(match) || "";
+
+      let num = parseInt((display.match(/\d+/) || [])[0], 10);
+
+      if (Number.isNaN(num)) {
+        num = parseInt((id.match(/\d+/) || [])[0], 10);
+      }
+
+      if (Number.isNaN(num)) {
+        num = 9999;
+      }
+
+      return num;
+    }
+
+    function sortMatches(matches) {
+      return matches.sort((a, b) => {
+        const aNum = getMatchSortNumber(a);
+        const bNum = getMatchSortNumber(b);
+
+        if (aNum !== bNum) return aNum - bNum;
+
+        return (a["Display Match"] || "").localeCompare(
+          b["Display Match"] || "",
+          undefined,
+          { numeric: true }
+        );
+      });
+    }
+
+    function buildMatchCard(data) {
+      const rawId = getMatchId(data);
+      const displayMatch = data["Display Match"] || rawId || "";
+      const division = data["Division"] || "";
+      const court = (data["Court"] || "-").trim();
+      const status = (data["Status"] || "Upcoming").trim();
+
+      const teamA = data["Team A"] || "TBD";
+      const teamB = data["Team B"] || "TBD";
+
+      const scoresA = [data["G1 A"], data["G2 A"], data["G3 A"]];
+      const scoresB = [data["G1 B"], data["G2 B"], data["G3 B"]];
+
+      const winner = (data["Winner"] || "").trim();
+
+      const teamAClass = winner && winner === teamA ? "team winner" : "team";
+      const teamBClass = winner && winner === teamB ? "team winner" : "team";
+      const liveClass = normalizeStatus(status) === "live" ? "match live" : "match";
+
+      return `
+        <div class="${liveClass}">
+          <div class="match-title">
+            <span class="match-number">${displayMatch}</span>
+            <span class="court">Court ${court}</span>
+            <span class="division">${division}</span>
+          </div>
+
+          <div class="${teamAClass}">
+            <span class="team-name">${teamA}</span>
+            <span class="score-group">
+              <span class="score-box">${scoresA[0] || ""}</span>
+              <span class="score-box">${scoresA[1] || ""}</span>
+              <span class="score-box">${scoresA[2] || ""}</span>
+            </span>
+          </div>
+
+          <div class="${teamBClass}">
+            <span class="team-name">${teamB}</span>
+            <span class="score-group">
+              <span class="score-box">${scoresB[0] || ""}</span>
+              <span class="score-box">${scoresB[1] || ""}</span>
+              <span class="score-box">${scoresB[2] || ""}</span>
+            </span>
+          </div>
+
+          <div class="match-footer">
+            <span class="status">${status}</span>
+            <span class="match-letter">${getLetter(rawId)}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMatches() {
+      const grid = document.getElementById("matchGrid");
+      let matches = [...allMatches];
+
+      if (currentFilter !== "all") {
+        matches = matches.filter(m => normalizeStatus(m["Status"]) === currentFilter);
+      }
+
+      sortMatches(matches);
+
+      if (!matches.length) {
+        grid.innerHTML = `<div class="empty-state">No matches in this category.</div>`;
+        return;
+      }
+
+      grid.innerHTML = matches.map(buildMatchCard).join("");
+    }
+
+    function updateSummaryCards() {
+      const totalGames = allMatches.length;
+      const nowPlaying = allMatches.filter(m => normalizeStatus(m["Status"]) === "live").length;
+      const onDeck = allMatches.filter(m => normalizeStatus(m["Status"]) === "ondeck").length;
+      const done = allMatches.filter(m => normalizeStatus(m["Status"]) === "done").length;
+
+      document.getElementById("totalGames").textContent = totalGames;
+      document.getElementById("nowPlayingCount").textContent = nowPlaying;
+      document.getElementById("onDeckCount").textContent = onDeck;
+      document.getElementById("doneCount").textContent = done;
+    }
+
+    async function loadCSV(url) {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`Fetch failed: ${res.status} for ${url}`);
+      return parseCSV(await res.text());
+    }
+
+    function updateLastUpdatedTime() {
+      const el = document.getElementById("lastUpdated");
+      if (!el) return;
+      const now = new Date();
+      const formatted = now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+      el.textContent = `Last updated: ${formatted}`;
+    }
+
+    function startRefreshCountdown() {
+      if (refreshCountdownStarted) return;
+      refreshCountdownStarted = true;
+
+      const el = document.getElementById("refreshCountdown");
+      if (!el) return;
+
+      el.textContent = `Refreshing in: ${refreshSeconds}s`;
+
+      setInterval(() => {
+        refreshSeconds--;
+        if (refreshSeconds <= 0) refreshSeconds = 30;
+        el.textContent = `Refreshing in: ${refreshSeconds}s`;
+      }, 1000);
+    }
+
+    async function loadData() {
+      try {
+        const [winners, losers] = await Promise.all([
+          loadCSV(WINNERS_URL),
+          loadCSV(LOSERS_URL)
+        ]);
+
+        allMatches = [...winners, ...losers].filter(row => getMatchId(row));
+
+        updateSummaryCards();
+        renderMatches();
+        updateLastUpdatedTime();
+        refreshSeconds = 30;
+      } catch (err) {
+        console.error("Dashboard load failed:", err);
+      }
+    }
+
+    window.addEventListener("load", () => {
+      document.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          currentFilter = btn.dataset.filter;
+          document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          renderMatches();
+        });
+      });
+
+      loadData();
+      startRefreshCountdown();
+      setInterval(loadData, 30000);
+    });
+  </script>
+</body>
+</html>
